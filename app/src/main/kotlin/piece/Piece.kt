@@ -9,7 +9,7 @@ import validator.TakeValidator
 import validator.Validator
 import validator.VectorValidator
 
-data class Piece(val pieceType: PieceType, val player: Boolean, val startingPosition: Coordinates){
+data class Piece(val id:Int, val pieceType: PieceType, val player: Boolean){
     fun isValidMove(move: MyMove, board: Board, moveHistory: List<Board>): GetIsValidMoveResult {
         return when(pieceType){
             is King -> getResultKing(move, board, moveHistory);
@@ -20,6 +20,7 @@ data class Piece(val pieceType: PieceType, val player: Boolean, val startingPosi
     }
 
     private fun getResultKing(move: MyMove, board: Board, moveHistory: List<Board>): GetIsValidMoveResult {
+        val startingPosition = startingPosition(moveHistory)
         pieceType as King
         if(player){
             if(isFirstMove(moveHistory) && isCastleMove(move)){
@@ -100,13 +101,22 @@ data class Piece(val pieceType: PieceType, val player: Boolean, val startingPosi
 
 
     private fun isFirstMove(moveHistory: List<Board>):Boolean {
-        val startingCoordinates = startingPosition
+        val startingCoordinates = startingPosition(moveHistory);
         for (board in moveHistory) {
-            if (board.positions[startingCoordinates] !== this) {
+            if (board.positions[startingCoordinates].hashCode() != this.hashCode()) {
                 return false
             }
         }
         return true
+    }
+
+    private fun startingPosition(moveHistory: List<Board>):Coordinates{
+        for((coordinate, piece) in moveHistory[0].positions){
+            if(piece.hashCode() == this.hashCode()){
+                return coordinate
+            }
+        }
+        throw NoSuchElementException("Could not find the starting position of the piece.")
     }
 }
 
@@ -137,21 +147,23 @@ data class Knight(override val validators: List<Validator> = listOf(
     VectorValidator(
         listOf(
             Vector(1,2), Vector(-1, 2), Vector(2, 1), Vector(2, -1), Vector(-2, 1), Vector(-2, -1), Vector(1, -2), Vector(-1, -2)
-            )
+        )
     )
 )):PieceType
 data class Queen(override val validators: List<Validator> = listOf(
     TakeValidator(Vector.up, Int.MAX_VALUE), TakeValidator(Vector.down, Int.MAX_VALUE), TakeValidator(Vector.left, Int.MAX_VALUE), TakeValidator(Vector.right, Int.MAX_VALUE), TakeValidator(Vector.downLeft, Int.MAX_VALUE), TakeValidator(Vector.downRight, Int.MAX_VALUE), TakeValidator(Vector.upLeft, Int.MAX_VALUE), TakeValidator(Vector.upRight, Int.MAX_VALUE),
     MoveValidator(Vector.up, Int.MAX_VALUE), MoveValidator(Vector.down, Int.MAX_VALUE), MoveValidator(Vector.left, Int.MAX_VALUE), MoveValidator(Vector.right, Int.MAX_VALUE), MoveValidator(Vector.downLeft, Int.MAX_VALUE), MoveValidator(Vector.downRight, Int.MAX_VALUE), MoveValidator(Vector.upLeft, Int.MAX_VALUE), MoveValidator(Vector.upRight, Int.MAX_VALUE)
-    )
+)
 ):PieceType
 data class Rook(override val validators: List<Validator> = listOf(
     TakeValidator(Vector.up, Int.MAX_VALUE), TakeValidator(Vector.down, Int.MAX_VALUE), TakeValidator(Vector.left, Int.MAX_VALUE), TakeValidator(Vector.right, Int.MAX_VALUE),
     MoveValidator(Vector.up, Int.MAX_VALUE), MoveValidator(Vector.down, Int.MAX_VALUE), MoveValidator(Vector.left, Int.MAX_VALUE), MoveValidator(Vector.right, Int.MAX_VALUE)
-    )
+)
 ):PieceType
 data class Bishop(override val validators: List<Validator> = listOf(
     TakeValidator(Vector.downLeft, Int.MAX_VALUE), TakeValidator(Vector.downRight, Int.MAX_VALUE), TakeValidator(Vector.upLeft, Int.MAX_VALUE), TakeValidator(Vector.upRight, Int.MAX_VALUE),
     MoveValidator(Vector.downLeft, Int.MAX_VALUE), MoveValidator(Vector.downRight, Int.MAX_VALUE), MoveValidator(Vector.upLeft, Int.MAX_VALUE), MoveValidator(Vector.upRight, Int.MAX_VALUE)
-    )
+)
 ):PieceType
+
+data class Generic(override val validators: List<Validator>):PieceType
