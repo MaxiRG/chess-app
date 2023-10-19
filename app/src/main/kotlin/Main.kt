@@ -1,10 +1,12 @@
 import piece.*
 import rules.ClassicRules
+import validator.VectorValidator
 
 fun main(args: Array<String>) {
     val rules = ClassicRules()
     var match = Match(rules, true, rules.startingPositions, listOf(rules.startingPositions), true)
     var turn = true;
+    val genericPiece = Piece(1, Generic(listOf(VectorValidator(listOf(Vector(1,0))))), true)
     displayChessboard(match.board.positions)
     while(true) {
         val move = promptForMove(turn);
@@ -16,6 +18,7 @@ fun main(args: Array<String>) {
                 displayChessboard(match.board.positions)
             }
 
+            is GetWonPlayResult -> TODO()
         }
     }
 }
@@ -35,6 +38,7 @@ fun displayChessboard(chessboard: Map<Coordinates, Piece>) {
                 is Pawn -> "P"
                 is Queen -> "Q"
                 is Rook -> "R"
+                is Generic -> "G"
                 else -> " " // Empty square
             }
 

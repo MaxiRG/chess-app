@@ -16,6 +16,8 @@ class GameEngineImpl:GameEngine {
                 val pieces = convertMap(match.board.positions)
                 NewGameState(pieces,if(match.playerTurn) PlayerColor.WHITE else PlayerColor.BLACK)
             }
+
+            is GetWonPlayResult -> GameOver(if(moveResult.player) PlayerColor.WHITE else PlayerColor.BLACK)
         }
 
     }
@@ -38,6 +40,7 @@ class GameEngineImpl:GameEngine {
             is Pawn -> "pawn"
             is Queen -> "queen"
             is Rook -> "rook"
+            is Generic -> "archbishop"
         }
     }
 
