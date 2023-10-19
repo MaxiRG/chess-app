@@ -41,7 +41,7 @@ class ClassicRules():Rules {
         (Coordinates(5,6) to Piece(30, Pawn(), false)),
         (Coordinates(6,6) to Piece(31, Pawn(), false)),
         (Coordinates(7,6) to Piece(32, Pawn(), false)),
-    ), 7, 7)
+    ), 16, 16)
     override fun checkWon(match: Match): Boolean {
         val map = match.board.positions
         val board = match.board
@@ -57,8 +57,7 @@ class ClassicRules():Rules {
                             is GetCastleMoveResult -> continue
                             is GetInvalidMoveResult -> continue
                             is GetNormalMoveResult -> match.makeMove(move);
-                            is GetPromotionMoveResult -> continue
-                        }
+                            is GetPromotionMoveResult -> continue }
                         if (!isInCheck(newBoard, turn, moveHistory)) {
                             return false
                         }

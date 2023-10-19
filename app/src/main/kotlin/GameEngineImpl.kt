@@ -22,12 +22,13 @@ class GameEngineImpl:GameEngine {
 
     }
 
+
     private fun convertMap(map: Map<Coordinates, Piece>):List<ChessPiece>{
         var list:List<ChessPiece> = listOf()
         var color:PlayerColor
         for((key, value) in map){
             color = if(value.player) PlayerColor.WHITE else PlayerColor.BLACK
-            list = list + ChessPiece(value.hashCode().toString(), color, Position(key.y+1,key.x+1), getPieceTypeString(value.pieceType))
+            list = list + ChessPiece(value.id.toString(), color, Position(key.y+1,key.x+1), getPieceTypeString(value.pieceType))
         }
         return list
     }
@@ -45,6 +46,6 @@ class GameEngineImpl:GameEngine {
     }
 
     override fun init(): InitialState {
-        return InitialState(BoardSize(8,8), startingBoardList, PlayerColor.WHITE)
+        return InitialState(BoardSize(15,15), startingBoardList, PlayerColor.WHITE)
     }
 }

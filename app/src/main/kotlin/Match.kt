@@ -1,6 +1,6 @@
 import piece.*
 import rules.Rules
-import java.util.NoSuchElementException
+import kotlin.NoSuchElementException
 
 data class Match(val rules: Rules, val playerTurn: Boolean, val board: Board, val moveHistory: List<Board>, val active: Boolean) {
     fun movePiece(move: MyMove): GetPlayResult {
@@ -41,13 +41,14 @@ data class Match(val rules: Rules, val playerTurn: Boolean, val board: Board, va
     }
 
     fun makePromotion(move: MyMove): Board {
-        val piece = getPiecePick();
+        val fromPiece = board.positions[move.start] ?: throw NoSuchElementException("From piece not found")
+        val piece = getPiecePick(fromPiece.id);
         val newPositions = board.positions + (move.end to piece) - (move.start)
         return board.copy(positions = newPositions, height = board.height, length = board.length)
     }
 
-    private fun getPiecePick(): Piece {
-        return Piece(33, Queen(), playerTurn);
+    private fun getPiecePick(id: Int): Piece {
+        return Piece(id, Queen(), playerTurn);
     }
 
     fun makeMove(move: MyMove): Board {
