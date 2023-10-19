@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
                 displayChessboard(match.board.positions)
             }
 
-            is GetWonPlayResult -> TODO()
+            is GetWonPlayResult -> println("Match ended! ${getPlayResult.player} won.")
         }
     }
 }
