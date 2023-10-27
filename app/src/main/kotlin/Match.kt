@@ -1,4 +1,5 @@
 import piece.*
+import rules.ClassicRules.Companion.QUEEN
 import rules.Rules
 import kotlin.NoSuchElementException
 
@@ -48,7 +49,7 @@ data class Match(val rules: Rules, val playerTurn: Boolean, val board: Board, va
     }
 
     private fun getPiecePick(id: Int): Piece {
-        return Piece(id, Queen(), playerTurn);
+        return Piece(id, QUEEN, playerTurn);
     }
 
     fun makeMove(move: MyMove): Board {

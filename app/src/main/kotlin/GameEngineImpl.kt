@@ -2,7 +2,14 @@ import edu.austral.dissis.chess.gui.*
 import edu.austral.dissis.chess.gui.Move
 import piece.*
 import rules.ClassicRules
-
+import rules.ClassicRules.Companion.BISHOP
+import rules.ClassicRules.Companion.BPAWN
+import rules.ClassicRules.Companion.KING
+import rules.ClassicRules.Companion.KNIGHT
+import rules.ClassicRules.Companion.PAWN
+import rules.ClassicRules.Companion.QUEEN
+import rules.ClassicRules.Companion.ROOK
+import validator.Validator
 class GameEngineImpl:GameEngine {
     val rules = ClassicRules()
     val startingBoard = rules.startingPositions
@@ -28,24 +35,25 @@ class GameEngineImpl:GameEngine {
         var color:PlayerColor
         for((key, value) in map){
             color = if(value.player) PlayerColor.WHITE else PlayerColor.BLACK
-            list = list + ChessPiece(value.id.toString(), color, Position(key.y+1,key.x+1), getPieceTypeString(value.pieceType))
+            list = list + ChessPiece(value.id.toString(), color, Position(key.y+1,key.x+1), getPieceTypeString(value.validators))
         }
         return list
     }
 
-    private fun getPieceTypeString(pieceType: PieceType):String{
-        return when(pieceType){
-            is Bishop -> "bishop"
-            is King -> "king"
-            is Knight -> "knight"
-            is Pawn -> "pawn"
-            is Queen -> "queen"
-            is Rook -> "rook"
-            is Generic -> "archbishop"
+    private fun getPieceTypeString(validators: List<Validator>):String{
+        return when(validators){
+            KING -> "king"
+            ROOK -> "rook"
+            BISHOP -> "bishop"
+            KNIGHT -> "knight"
+            PAWN -> "pawn"
+            BPAWN -> "pawn"
+            QUEEN -> "queen"
+            else -> "archbishop"
         }
     }
 
     override fun init(): InitialState {
-        return InitialState(BoardSize(15,15), startingBoardList, PlayerColor.WHITE)
+        return InitialState(BoardSize(8,8), startingBoardList, PlayerColor.WHITE)
     }
 }
