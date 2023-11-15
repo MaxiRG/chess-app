@@ -1,6 +1,8 @@
+package edu.austral.dissis.commons
+
 sealed interface Pair
 data class Coordinates(val x:Int, val y:Int): Pair
-data class Vector(val x:Int, val y:Int): Pair{
+data class Vector(val x:Int, val y:Int): Pair {
     companion object{
         val up = Vector(0,1)
         val down = Vector(0, -1)

@@ -1,15 +1,15 @@
-package validator
+package edu.austral.dissis.chess.validator
 
-import Board
-import Coordinates
-import MyMove
-import piece.GetInvalidMoveResult
-import piece.GetNormalMoveResult
-import piece.GetPieceMoveResult
-import piece.Piece
+import edu.austral.dissis.commons.Board
+import edu.austral.dissis.commons.Coordinates
+import edu.austral.dissis.commons.MyMove
+import edu.austral.dissis.commons.GetInvalidMoveResult
+import edu.austral.dissis.commons.Piece
+import edu.austral.dissis.commons.ValidatorResult
+import edu.austral.dissis.commons.Validator
 
-data class FirstMoveValidator(val myValidator: Validator):Validator {
-    override fun validate(move: MyMove, board: Board, moveHistory: List<Board>): GetPieceMoveResult {
+data class FirstMoveValidator(val myValidator: Validator): Validator {
+    override fun validate(move: MyMove, board: Board, moveHistory: List<Board>): ValidatorResult {
         val piece = board.positions[move.start] ?: throw NoSuchElementException("Could not find starting piece")
         if(isFirstMove(piece, moveHistory)){
             return myValidator.validate(move, board, moveHistory)
@@ -27,7 +27,7 @@ data class FirstMoveValidator(val myValidator: Validator):Validator {
         return true
     }
 
-    private fun startingPosition(myPiece: Piece, moveHistory: List<Board>):Coordinates{
+    private fun startingPosition(myPiece: Piece, moveHistory: List<Board>): Coordinates {
         for((coordinate, piece) in moveHistory[0].positions){
             if(piece.hashCode() == myPiece.hashCode()){
                 return coordinate

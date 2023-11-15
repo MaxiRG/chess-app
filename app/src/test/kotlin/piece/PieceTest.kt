@@ -1,20 +1,24 @@
 package piece
 
-import Board
-import Coordinates
-import GetInvalidPlayResult
-import GetValidPlayResult
-import GetWonPlayResult
-import Match
-import MyMove
-import piece.*
-import rules.ClassicRules
-import rules.ClassicRules.Companion.BISHOP
-import rules.ClassicRules.Companion.KING
-import rules.ClassicRules.Companion.KNIGHT
-import rules.ClassicRules.Companion.PAWN
-import rules.ClassicRules.Companion.QUEEN
-import rules.ClassicRules.Companion.ROOK
+import edu.austral.dissis.commons.Board
+import edu.austral.dissis.commons.Coordinates
+import GetCastleMoveResult
+import edu.austral.dissis.commons.GetInvalidMoveResult
+import edu.austral.dissis.commons.GetInvalidPlayResult
+import edu.austral.dissis.commons.GetNormalMoveResult
+import GetPromotionMoveResult
+import edu.austral.dissis.commons.GetValidPlayResult
+import edu.austral.dissis.commons.GetWonPlayResult
+import edu.austral.dissis.commons.Match
+import edu.austral.dissis.commons.MyMove
+import edu.austral.dissis.commons.Piece
+import edu.austral.dissis.chess.rules.ClassicRules
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.BISHOP
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.KING
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.KNIGHT
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.PAWN
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.QUEEN
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.ROOK
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -86,7 +90,7 @@ class PieceTest{
 
     @Test
     fun testPawnMove() {
-        val pawn = Piece(1,PAWN, true)
+        val pawn = Piece(1, PAWN, true)
         assertTrue(parseChessBoardFromFile("src/test/resources/pawnMove.txt", pawn, Coordinates(0, 0)))
 
     }
@@ -99,7 +103,7 @@ class PieceTest{
 
     @Test
     fun testRookMove(){
-        val rook = Piece(1,ROOK, true)
+        val rook = Piece(1, ROOK, true)
         assertTrue(parseChessBoardFromFile("src/test/resources/rookMove.txt", rook, Coordinates(3, 4)))
     }
 
@@ -123,7 +127,13 @@ class PieceTest{
 
     @Test
     fun testValidWhiteKingShortCastle(){
-        val map = mapOf(Coordinates(3, 0) to Piece(13, KING, true), Coordinates(7,0) to Piece(9, ROOK, true), Coordinates(6, 7) to Piece(1, KING, false))
+        val map = mapOf(
+            Coordinates(3, 0) to Piece(13, KING, true), Coordinates(7,0) to Piece(9, ROOK, true), Coordinates(6, 7) to Piece(
+            1,
+            KING,
+            false
+        )
+        )
         val board = Board(map, 7, 7)
         val match = Match(ClassicRules(), true, board, listOf(board), true)
         val resultMap: Map<Coordinates, Piece> =
@@ -132,13 +142,25 @@ class PieceTest{
                 is GetValidPlayResult -> resultGame.match.board.positions;
                 is GetWonPlayResult -> resultGame.match.board.positions
             }
-        val correctMap = mapOf(Coordinates(5, 0) to Piece(13, KING, true), Coordinates(4,0) to Piece(9, ROOK, true), Coordinates(6, 7) to Piece(1, KING, false))
+        val correctMap = mapOf(
+            Coordinates(5, 0) to Piece(13, KING, true), Coordinates(4,0) to Piece(9, ROOK, true), Coordinates(6, 7) to Piece(
+            1,
+            KING,
+            false
+        )
+        )
         assertEquals(correctMap, resultMap)
     }
 
     @Test
     fun testValidWhiteKingLongCastle(){
-        val map = mapOf(Coordinates(7, 7) to Piece(1, KING, false),Coordinates(3, 0) to Piece(13, KING, true), Coordinates(0,0) to Piece(19, ROOK, true))
+        val map = mapOf(
+            Coordinates(7, 7) to Piece(1, KING, false), Coordinates(3, 0) to Piece(13, KING, true), Coordinates(0,0) to Piece(
+            19,
+            ROOK,
+            true
+        )
+        )
         val board = Board(map, 7, 7)
         val match = Match(ClassicRules(), true, board, listOf(board), true)
         val resultMap: Map<Coordinates, Piece> =
@@ -147,13 +169,25 @@ class PieceTest{
                 is GetValidPlayResult -> resultGame.match.board.positions;
                 is GetWonPlayResult -> resultGame.match.board.positions
             }
-        val correctMap = mapOf(Coordinates(7, 7) to Piece(1, KING, false), Coordinates(1, 0) to Piece(13, KING, true), Coordinates(2,0) to Piece(19, ROOK, true))
+        val correctMap = mapOf(
+            Coordinates(7, 7) to Piece(1, KING, false), Coordinates(1, 0) to Piece(13, KING, true), Coordinates(2,0) to Piece(
+            19,
+            ROOK,
+            true
+        )
+        )
         assertEquals(correctMap, resultMap)
     }
 
     @Test
     fun testValidBlackKingLongCastle(){
-        val map = mapOf(Coordinates(0, 0) to Piece(1, KING, false), Coordinates(3, 7) to Piece(1, KING, true), Coordinates(7,7) to Piece(1, ROOK, true))
+        val map = mapOf(
+            Coordinates(0, 0) to Piece(1, KING, false), Coordinates(3, 7) to Piece(1, KING, true), Coordinates(7,7) to Piece(
+            1,
+            ROOK,
+            true
+        )
+        )
         val board = Board(map, 7, 7)
         val match = Match(ClassicRules(), true, board, listOf(board), true)
         val resultMap: Map<Coordinates, Piece> =
@@ -162,13 +196,25 @@ class PieceTest{
                 is GetValidPlayResult -> resultGame.match.board.positions;
                 is GetWonPlayResult -> resultGame.match.board.positions
             }
-        val correctMap = mapOf(Coordinates(0, 0) to Piece(1, KING, false), Coordinates(5, 7) to Piece(1, KING, true), Coordinates(4,7) to Piece(1, ROOK, true))
+        val correctMap = mapOf(
+            Coordinates(0, 0) to Piece(1, KING, false), Coordinates(5, 7) to Piece(1, KING, true), Coordinates(4,7) to Piece(
+            1,
+            ROOK,
+            true
+        )
+        )
         assertEquals(correctMap, resultMap)
     }
 
     @Test
     fun testValidBlackKingShortCastle(){
-        val map = mapOf(Coordinates(7, 7) to Piece(1, KING, false), Coordinates(3, 7) to Piece(1, KING, true), Coordinates(0,7) to Piece(1, ROOK, true))
+        val map = mapOf(
+            Coordinates(7, 7) to Piece(1, KING, false), Coordinates(3, 7) to Piece(1, KING, true), Coordinates(0,7) to Piece(
+            1,
+            ROOK,
+            true
+        )
+        )
         val board = Board(map, 7, 7)
         val match = Match(ClassicRules(), true, board, listOf(board), true)
         val resultMap: Map<Coordinates, Piece> =
@@ -177,7 +223,13 @@ class PieceTest{
                 is GetValidPlayResult -> resultGame.match.board.positions;
                 is GetWonPlayResult -> resultGame.match.board.positions
             }
-        val correctMap = mapOf(Coordinates(7, 7) to Piece(1, KING, false), Coordinates(1, 7) to Piece(1, KING, true), Coordinates(2,7) to Piece(1, ROOK, true))
+        val correctMap = mapOf(
+            Coordinates(7, 7) to Piece(1, KING, false), Coordinates(1, 7) to Piece(1, KING, true), Coordinates(2,7) to Piece(
+            1,
+            ROOK,
+            true
+        )
+        )
         assertEquals(correctMap, resultMap)
     }
 }

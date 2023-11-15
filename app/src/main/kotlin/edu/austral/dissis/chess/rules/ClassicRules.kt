@@ -1,14 +1,19 @@
-package rules
+package edu.austral.dissis.chess.rules
 
-import Board
-import Coordinates
-import Match
-import MyMove
-import Vector
-import piece.*
-import validator.*
+import edu.austral.dissis.chess.validator.*
+import edu.austral.dissis.commons.Board
+import edu.austral.dissis.commons.BoardGenerator
+import edu.austral.dissis.commons.Coordinates
+import edu.austral.dissis.commons.GetInvalidMoveResult
+import edu.austral.dissis.commons.GetNormalMoveResult
+import edu.austral.dissis.commons.Match
+import edu.austral.dissis.commons.MyMove
+import edu.austral.dissis.commons.Piece
+import edu.austral.dissis.commons.Vector
+import edu.austral.dissis.commons.Rules
 
-class ClassicRules():Rules {
+class ClassicRules(): Rules {
+    private val boardGenerator = BoardGenerator();
     companion object {
         val QUEEN = listOf(
             MoveValidator(Vector.up, -1, true, true), MoveValidator(Vector.down, -1, true, true), MoveValidator(
@@ -16,8 +21,10 @@ class ClassicRules():Rules {
             Vector.upRight, -1, true, true), MoveValidator(Vector.downLeft, -1, true, true), MoveValidator(Vector.downRight, -1, true, true)
         )
         val BISHOP = listOf(
-            MoveValidator(Vector.upLeft, -1, true, true), MoveValidator(
-            Vector.upRight, -1, true, true), MoveValidator(Vector.downLeft, -1, true, true), MoveValidator(Vector.downRight, -1, true, true)
+            MoveValidator(Vector.upLeft, -1, true, true),
+            MoveValidator(Vector.upRight, -1, true, true),
+            MoveValidator(Vector.downLeft, -1, true, true),
+            MoveValidator(Vector.downRight, -1, true, true)
         )
         val ROOK = listOf(
             MoveValidator(Vector.up, -1, true, true), MoveValidator(Vector.down, -1, true, true), MoveValidator(
@@ -27,7 +34,7 @@ class ClassicRules():Rules {
             VectorValidator(
             listOf(
                 Vector(1,2), Vector(-1, 2), Vector(2, 1), Vector(2, -1), Vector(-2, 1), Vector(-2, -1), Vector(1, -2), Vector(-1, -2)
-            ))
+            ), true)
         )
         val KING = listOf(
             MoveValidator(Vector.up, 1, true, true), MoveValidator(Vector.down, 1, true, true), MoveValidator(
@@ -35,14 +42,14 @@ class ClassicRules():Rules {
             Vector.upRight, 1, true, true), MoveValidator(Vector.downLeft, 1, true, true), MoveValidator(Vector.downRight, 1, true, true), FirstMoveValidator(CastleValidator())
         )
         val PAWN = listOf(
-            PromotionValidator(MoveValidator(Vector.upLeft, 1, true, false)), PromotionValidator(MoveValidator(Vector.upRight, 1, true, false)), PromotionValidator(
-            MoveValidator(Vector.up, 1, false, true)
+            PromotionValidator(MoveValidator(Vector.upLeft, 1, true, false), QUEEN), PromotionValidator(MoveValidator(Vector.upRight, 1, true, false), QUEEN), PromotionValidator(
+            MoveValidator(Vector.up, 1, false, true), QUEEN
             ), FirstMoveValidator(MoveValidator(Vector.up, 2, false, true))
         )
 
         val BPAWN = listOf(
-            PromotionValidator(MoveValidator(Vector.downLeft, 1, true, false)), PromotionValidator(MoveValidator(Vector.downRight, 1, true, false)), PromotionValidator(
-                MoveValidator(Vector.down, 1, false, true)
+            PromotionValidator(MoveValidator(Vector.downLeft, 1, true, false), QUEEN), PromotionValidator(MoveValidator(Vector.downRight, 1, true, false), QUEEN), PromotionValidator(
+                MoveValidator(Vector.down, 1, false, true), QUEEN
             ), FirstMoveValidator(MoveValidator(Vector.down, 2, false, true))
         )
     }
@@ -80,11 +87,15 @@ class ClassicRules():Rules {
         (Coordinates(5,6) to Piece(30, BPAWN, false)),
         (Coordinates(6,6) to Piece(31, BPAWN, false)),
         (Coordinates(7,6) to Piece(32, BPAWN, false)),
-    ), 16, 16)
+    ), 7, 7)
     override fun checkWon(match: Match): Boolean {
         val map = match.board.positions
         val board = match.board
         val turn = match.playerTurn
+
+        if(!isInCheck(board, turn, match.moveHistory)){
+            return false
+        }
 
         for((coordinates, piece) in map){
             if(piece.player == turn){
@@ -92,11 +103,10 @@ class ClassicRules():Rules {
                     for(y in 0..board.height) {
                         val move = MyMove(turn, coordinates, Coordinates(x, y))
                         val moveHistory: List<Board> = match.moveHistory
-                        val newBoard: Board = when (val isValidMove = piece.isValidMove(move, board, moveHistory)) {
-                            is GetCastleMoveResult -> continue
+                        val newBoard: Board = when (val isValidMove = boardGenerator.generateBoard(piece, move, board, moveHistory)) {
                             is GetInvalidMoveResult -> continue
-                            is GetNormalMoveResult -> match.makeMove(move);
-                            is GetPromotionMoveResult -> continue }
+                            is GetNormalMoveResult -> isValidMove.board;
+                            }
                         if (!isInCheck(newBoard, turn, moveHistory)) {
                             return false
                         }
@@ -113,11 +123,9 @@ class ClassicRules():Rules {
 
         for((coordinates, piece) in map){
             val checkMove = MyMove(turn, coordinates, kingCoordinates)
-            return when(val moveResult = piece.isValidMove(checkMove, board, moveHistory)){
-                is GetCastleMoveResult -> true
+            return when(val moveResult = boardGenerator.generateBoard(piece, checkMove, board, moveHistory)){
                 is GetInvalidMoveResult -> continue
                 is GetNormalMoveResult -> true
-                is GetPromotionMoveResult -> true
             }
         }
         return false
