@@ -1,4 +1,4 @@
-import piece.Piece
+package edu.austral.dissis.commons
 
 data class Board(val positions: Map<Coordinates, Piece>, val height: Int, val length: Int){
     fun getPieceInPosition(coordinates: Coordinates): GetPieceInPositionResult {
@@ -15,7 +15,7 @@ data class Board(val positions: Map<Coordinates, Piece>, val height: Int, val le
     private fun isOutOfBounds(coordinates: Coordinates) =
         coordinates.x > length || coordinates.x < 0 || coordinates.y > height || coordinates.y < 0
 
-    fun nextPosition(coordinates: Coordinates, vector: Vector):GetPieceInPositionResult{
+    fun nextPosition(coordinates: Coordinates, vector: Vector): GetPieceInPositionResult {
         return getPieceInPosition(Coordinates(coordinates.x + vector.x, coordinates.y + vector.y))
     }
 }

@@ -1,22 +1,40 @@
+package edu.austral.dissis.commons
+
 import edu.austral.dissis.chess.gui.*
 import edu.austral.dissis.chess.gui.Move
-import piece.*
-import rules.ClassicRules
-import rules.ClassicRules.Companion.BISHOP
-import rules.ClassicRules.Companion.BPAWN
-import rules.ClassicRules.Companion.KING
-import rules.ClassicRules.Companion.KNIGHT
-import rules.ClassicRules.Companion.PAWN
-import rules.ClassicRules.Companion.QUEEN
-import rules.ClassicRules.Companion.ROOK
-import validator.Validator
-class GameEngineImpl:GameEngine {
-    val rules = ClassicRules()
+import edu.austral.dissis.checkers.rules.CheckersRules
+import edu.austral.dissis.checkers.rules.CheckersRules.Companion.BCHECKER
+import edu.austral.dissis.checkers.rules.CheckersRules.Companion.QUEEN_CHECKER
+import edu.austral.dissis.checkers.rules.CheckersRules.Companion.RCHECKER
+import edu.austral.dissis.chess.rules.ClassicRules
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.BISHOP
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.BPAWN
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.KING
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.KNIGHT
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.PAWN
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.QUEEN
+import edu.austral.dissis.chess.rules.ClassicRules.Companion.ROOK
+
+class GameEngineImpl(rules: Rules):GameEngine {
     val startingBoard = rules.startingPositions
     val startingBoardList = convertMap(startingBoard.positions)
-    var match = Match(ClassicRules(), true,startingBoard,listOf(startingBoard), true)
+    var match = Match(rules, true,startingBoard,listOf(startingBoard), true)
+
+    companion object {
+        fun withChessRules(): GameEngineImpl{
+            return GameEngineImpl(ClassicRules());
+        }
+
+        fun withCheckersRules(): GameEngineImpl {
+            return GameEngineImpl(CheckersRules())
+        }
+    }
     override fun applyMove(move: Move): MoveResult {
-        return when(val moveResult = match.movePiece(MyMove(match.playerTurn,Coordinates(move.from.column-1, move.from.row-1), Coordinates(move.to.column-1, move.to.row-1)))){
+        return when(val moveResult = match.movePiece(
+            MyMove(match.playerTurn,
+                Coordinates(move.from.column-1, move.from.row-1), Coordinates(move.to.column-1, move.to.row-1)
+            )
+        )){
             is GetInvalidPlayResult -> InvalidMove("Invalid move!")
             is GetValidPlayResult -> {
                 match = moveResult.match
@@ -49,6 +67,9 @@ class GameEngineImpl:GameEngine {
             PAWN -> "pawn"
             BPAWN -> "pawn"
             QUEEN -> "queen"
+            RCHECKER -> "pawn"
+            BCHECKER -> "pawn"
+            QUEEN_CHECKER -> "queen"
             else -> "archbishop"
         }
     }
