@@ -5,13 +5,6 @@
 import com.fasterxml.jackson.module.kotlin.jacksonTypeRef
 import edu.austral.dissis.commons.GameEngineImpl
 import edu.austral.dissis.chess.gui.*
-import edu.austral.dissis.server.ChessMoveListener
-import edu.austral.dissis.server.ClientConnectionCollectorListener
-import edu.austral.dissis.server.MessageCollectorListener
-import edu.austral.dissis.server.ServerConnectionCollectorListener
-import edu.austral.ingsis.clientserver.*
-import edu.austral.ingsis.clientserver.netty.client.NettyClientBuilder
-import edu.austral.ingsis.clientserver.netty.server.NettyServerBuilder
 import javafx.application.Application
 import javafx.application.Application.launch
 import javafx.scene.Scene
